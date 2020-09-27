@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+me.stevenkin.alohajob.server.config.AlohaJobServerAutoConfiguration
