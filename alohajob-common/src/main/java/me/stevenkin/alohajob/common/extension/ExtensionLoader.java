@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class ExtensionLoader<T> {
-    private static final String PREFIX = "META-INF/agumon/";
+    private static final String PREFIX = "META-INF/alohajob/";
 
     private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> extensionLoaderCache = new ConcurrentHashMap<>();
     @Setter
