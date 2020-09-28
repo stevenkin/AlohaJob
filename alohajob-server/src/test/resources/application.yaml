@@ -5,7 +5,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     username: root
-    url: jdbc:mysql://212.64.104.107:3306/agumon?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://212.64.104.107:3306/alohajob?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
 
   main:
     allow-bean-definition-overriding: true
