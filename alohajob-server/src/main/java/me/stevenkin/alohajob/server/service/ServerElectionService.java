@@ -8,30 +8,25 @@ import me.stevenkin.alohajob.server.lock.LockService;
 import me.stevenkin.alohajob.server.model.AppDo;
 import me.stevenkin.alohajob.server.repository.AppRepository;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.concurrent.locks.Lock;
 
+@Service
 public class ServerElectionService {
     private static final int MAX_FAIL_NUM = 3;
-
+    @Autowired
     private AppRepository appRepository;
-
+    @Autowired
     private ServerAddress serverAddress;
-
+    @Autowired
     private LockService lockService;
-
+    @Autowired
     private ServerCluster serverCluster;
-
+    @Autowired
     private AlohaJobServerProperties alohajobServerProperties;
-
-    public ServerElectionService(AppRepository appRepository, ServerAddress serverAddress, AlohaJobServerProperties alohajobServerProperties, ServerCluster serverCluster) {
-        this.appRepository = appRepository;
-        this.serverAddress = serverAddress;
-        this.alohajobServerProperties = alohajobServerProperties;
-        this.lockService = ExtensionLoader.getExtensionLoader(LockService.class).getExtension(alohajobServerProperties.getLockService());
-        this.serverCluster = serverCluster;
-    }
 
     /**
      * 当current server 心跳失败后重新选举服务器

@@ -1,12 +1,12 @@
 package me.stevenkin.alohajob.server.lock;
 
-import me.stevenkin.alohajob.common.extension.SpiImp;
 import me.stevenkin.alohajob.server.model.AppDo;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.sql.Connection;
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-@SpiImp(name = "mysqlLock")
+@Component
 public class MysqlLockService implements LockService {
     @Autowired
     private JdbcTemplate jdbcTemplate;

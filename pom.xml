@@ -12,6 +12,12 @@
         <module>alohajob-node</module>
         <module>alohajob-server</module>
         <module>alohajob-example</module>
+        <module>alohajob-sdk</module>
+        <module>alohajob-scheduler</module>
+        <module>alohajob-registry</module>
+        <module>alohajob-scheduler/alohajob-scheduler-api</module>
+        <module>alohajob-scheduler/alohajob-scheduler-default</module>
+        <module>alohajob-example/alohajob-example-server</module>
     </modules>
     <packaging>pom</packaging>
     <name>AlohaJob</name>

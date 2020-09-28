@@ -11,5 +11,50 @@
 
     <artifactId>alohajob-node</artifactId>
 
+    <properties>
+        <springboot.version>2.2.6.RELEASE</springboot.version>
+        <h2.db.version>1.4.200</h2.db.version>
+        <junit.version>5.6.1</junit.version>
+        <logback.version>1.2.3</logback.version>
+    </properties>
+
+    <dependencies>
+    <dependency>
+        <groupId>me.stevenkin</groupId>
+        <artifactId>alohajob-common</artifactId>
+        <version>${parent.version}</version>
+    </dependency>
+
+    <!-- Spring 依赖 -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>${springboot.version}</version>
+    </dependency>
+
+    <!-- h2 database -->
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>${h2.db.version}</version>
+    </dependency>
+
+    <!-- Junit 测试 -->
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- log for test stage -->
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+        <scope>test</scope>
+    </dependency>
+    </dependencies>
+
 
 </project>

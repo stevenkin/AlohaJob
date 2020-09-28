@@ -4,10 +4,14 @@ import me.stevenkin.alohajob.server.cluster.WorkersClusterManager;
 import me.stevenkin.alohajob.server.model.AppDo;
 import me.stevenkin.alohajob.server.repository.AppRepository;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AppService {
+    @Autowired
     private AppRepository appRepository;
-
+    @Autowired
     private WorkersClusterManager workersClusterManager;
 
     public AppService(AppRepository appRepository, WorkersClusterManager workersClusterManager) {

@@ -9,15 +9,11 @@ public class AlohaJobServerProperties {
     /**
      * 调度器线程数
      */
-    private int scheduleThreadNum = 5;
+    private Integer scheduleThreadNum = 5;
     /**
      * scheduler name
      */
     private String scheduler;
-    /**
-     * lock service name
-     */
-    private String lockService;
     /**
      * registry service name
      */

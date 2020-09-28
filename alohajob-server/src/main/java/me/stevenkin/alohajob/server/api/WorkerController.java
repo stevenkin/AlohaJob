@@ -12,6 +12,7 @@ import me.stevenkin.alohajob.server.cluster.WorkersClusterManager;
 import me.stevenkin.alohajob.server.config.AlohaJobServerProperties;
 import me.stevenkin.alohajob.server.service.AppService;
 import me.stevenkin.alohajob.server.service.ServerElectionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -20,20 +21,14 @@ import java.util.Date;
 @RequestMapping("/worker")
 @Slf4j
 public class WorkerController {
+    @Autowired
     private AppService appService;
-
+    @Autowired
     private ServerElectionService serverElectionService;
-
+    @Autowired
     private WorkersClusterManager workersClusterManager;
-
+    @Autowired
     private AlohaJobServerProperties serverProperties;
-
-    public WorkerController(AppService appService, ServerElectionService serverElectionService, WorkersClusterManager workersClusterManager, AlohaJobServerProperties serverProperties) {
-        this.appService = appService;
-        this.serverElectionService = serverElectionService;
-        this.workersClusterManager = workersClusterManager;
-        this.serverProperties = serverProperties;
-    }
 
     @PostMapping(value = "/login")
     public Response<AppLoginResp> login(@RequestBody AppLoginReq appLoginReq) {

@@ -2,26 +2,25 @@ package me.stevenkin.alohajob.server.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import me.stevenkin.alohajob.common.extension.ExtensionLoader;
+import me.stevenkin.alohajob.registry.api.RegistryService;
 import me.stevenkin.alohajob.server.ServerAddress;
 import me.stevenkin.alohajob.server.config.AlohaJobServerProperties;
-import me.stevenkin.alohajob.server.service.RegistryService;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-public class ServerBootListener implements ApplicationListener<ApplicationEvent> {
+@Component
+public class ServerBootListener implements ApplicationListener<ApplicationEvent>, InitializingBean {
     private RegistryService registryService;
-
+    @Autowired
     private ServerAddress serverAddress;
-
+    @Autowired
     private AlohaJobServerProperties AlohaJobServerProperties;
-
-    public ServerBootListener(AlohaJobServerProperties AlohaJobServerProperties, ServerAddress serverAddress) {
-        this.AlohaJobServerProperties = AlohaJobServerProperties;
-        this.serverAddress = serverAddress;
-    }
 
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
@@ -34,7 +33,6 @@ public class ServerBootListener implements ApplicationListener<ApplicationEvent>
 
     private void start() {
         log.info("server {} starting", serverAddress.get());
-        registryService = ExtensionLoader.getExtensionLoader(RegistryService.class).getExtension(AlohaJobServerProperties.getRegistryService());
         registryService.registerServer(serverAddress.get());
         log.info("server {} started", serverAddress.get());
     }
@@ -45,4 +43,8 @@ public class ServerBootListener implements ApplicationListener<ApplicationEvent>
         log.info("server {} stoped", serverAddress.get());
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        registryService = ExtensionLoader.getExtensionLoader(RegistryService.class).getExtension(AlohaJobServerProperties.getRegistryService());
+    }
 }

@@ -192,7 +192,7 @@ public class ExtensionLoader<T> {
 
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(obj);
         GenericBeanDefinition definition = (GenericBeanDefinition) builder.getRawBeanDefinition();
-        definition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_NAME);
+        definition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_TYPE);
         getRegistry().registerBeanDefinition(beanName, definition);
 
         return applicationContext.getBean(beanName);
