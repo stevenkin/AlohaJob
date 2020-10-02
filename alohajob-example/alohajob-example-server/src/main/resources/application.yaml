@@ -7,9 +7,6 @@ spring:
     username: root
     url: jdbc:mysql://212.64.104.107:3306/alohajob?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
 
-  main:
-    allow-bean-definition-overriding: true
-
 alohajob:
   server:
     version: 0.0.1

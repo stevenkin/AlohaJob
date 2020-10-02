@@ -19,41 +19,47 @@
     </properties>
 
     <dependencies>
-    <dependency>
-        <groupId>me.stevenkin</groupId>
-        <artifactId>alohajob-common</artifactId>
-        <version>${parent.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>me.stevenkin</groupId>
+            <artifactId>alohajob-common</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
 
-    <!-- Spring 依赖 -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-        <version>${springboot.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>me.stevenkin</groupId>
+            <artifactId>alohajob-sdk</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
-    <!-- h2 database -->
-    <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <version>${h2.db.version}</version>
-    </dependency>
+        <!-- Spring 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${springboot.version}</version>
+        </dependency>
 
-    <!-- Junit 测试 -->
-    <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
-    </dependency>
+        <!-- h2 database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.db.version}</version>
+        </dependency>
 
-    <!-- log for test stage -->
-    <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${logback.version}</version>
-        <scope>test</scope>
-    </dependency>
+        <!-- Junit 测试 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- log for test stage -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 

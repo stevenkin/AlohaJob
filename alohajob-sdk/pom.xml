@@ -11,5 +11,13 @@
 
     <artifactId>alohajob-sdk</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>me.stevenkin</groupId>
+            <artifactId>alohajob-common</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+
 
 </project>
