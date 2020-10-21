@@ -5,27 +5,29 @@ import lombok.Setter;
 import lombok.ToString;
 import me.stevenkin.alohajob.common.logger.AlohaJobLogger;
 
+import java.util.concurrent.Future;
+
 @Getter
 @Setter
 @ToString
-public class ProcessContext {
+public abstract class ProcessContext {
     private Long jobId;
 
     private Long instanceId;
 
-    private Long shardId;
+    private String instanceName;
 
     private String jobParam;
 
     private String instanceParam;
-
-    private String shardParam;
-
-    private Integer totalShardCount;
 
     private Integer maxRetryTimes;
 
     private Integer currentRetryTimes;
 
     private AlohaJobLogger logger;
+
+    public abstract Future<String> newInstance(String instanceName, String instanceParam);
+
+    public abstract Future<String> newInstanceIfAbsent(String instanceName, String instanceParam);
 }

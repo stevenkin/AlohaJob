@@ -38,13 +38,6 @@
             <version>${springboot.version}</version>
         </dependency>
 
-        <!-- h2 database -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2.db.version}</version>
-        </dependency>
-
         <!-- Junit 测试 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

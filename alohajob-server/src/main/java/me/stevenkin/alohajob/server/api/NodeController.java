@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/worker")
+@RequestMapping("/node")
 @Slf4j
-public class WorkerController {
+public class NodeController {
     @Autowired
     private AppService appService;
     @Autowired

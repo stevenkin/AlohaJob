@@ -9,18 +9,18 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppDo {
+public class JobTriggerDo {
     private Long id;
-    /**
-     * username@appname
-     */
-    private String appName;
 
-    private Long userId;
+    // 任务ID
+    private Long jobId;
+    // 任务所属应用的ID，冗余提高查询效率
+    private Long appId;
+    // 任务实例ID
+    private Long triggerId;
 
-    private String secret;
-
-    private String currentServer;
+    // 触发时间
+    private Long triggerTime;
 
     private Date createTime;
     private Date updateTime;

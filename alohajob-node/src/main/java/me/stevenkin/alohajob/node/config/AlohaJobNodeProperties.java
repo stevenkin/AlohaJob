@@ -42,6 +42,14 @@ public class AlohaJobNodeProperties {
      * connect timeout(unit ms)
      */
     private int connectTimeout = 5000;
+    /**
+     * executor thread num
+     */
+    private int executorThreadNum = 100;
+    /**
+     * executor queue size
+     */
+    private int executorQueueSize = 10000;
     /*********** worker组件配置 ***********/
     /**
      * 服务发现组件
