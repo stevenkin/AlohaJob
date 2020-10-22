@@ -5,15 +5,17 @@ import lombok.Setter;
 import lombok.ToString;
 import me.stevenkin.alohajob.common.logger.AlohaJobLogger;
 
-import java.util.concurrent.Future;
-
 @Getter
 @Setter
 @ToString
 public abstract class ProcessContext {
     private Long jobId;
 
-    private Long instanceId;
+    private String triggerId;
+
+    private String instanceId;
+
+    private String parentInstanceId;
 
     private String instanceName;
 
@@ -27,7 +29,9 @@ public abstract class ProcessContext {
 
     private AlohaJobLogger logger;
 
-    public abstract Future<String> newInstance(String instanceName, String instanceParam);
+    public abstract AlohaFuture<ProcessResult> newInstance(String instanceName, String instanceParam);
 
-    public abstract Future<String> newInstanceIfAbsent(String instanceName, String instanceParam);
+    public abstract AlohaFuture<ProcessResult> newInstanceIfAbsent(String instanceName, String instanceParam);
+
+    public abstract void close();
 }

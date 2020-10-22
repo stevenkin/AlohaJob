@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class JobTriggerDto {
+public class JobInstanceResultDto {
     private Integer status;
+
+    private String msg;
 }

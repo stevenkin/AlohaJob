@@ -22,7 +22,19 @@ public class SchedulerServerClient {
         return null;
     }
 
-    public JobInstanceDto pullJobInstance(String triggerId) {
+    public JobInstanceDto getRootJobInstance(String triggerId) {
+        return null;
+    }
+
+    public JobInstanceDto getJobInstance(String instanceId) {
+        return null;
+    }
+
+    public JobInstanceResultDto getJobInstanceResult(String instanceId) {
+        return null;
+    }
+
+    public JobInstanceDto pullJobInstance(String triggerId, String address) {
         return null;
     }
 
@@ -38,12 +50,12 @@ public class SchedulerServerClient {
         return false;
     }
 
-    public boolean newJobInstance(String triggerId, String parentInstanceId, String subInstanceName, String instanceParam) {
-        return false;
+    public String newJobInstance(String triggerId, String parentInstanceId, String subInstanceName, String instanceParam) {
+        return null;
     }
 
-    public boolean newJobInstanceIfAbsent(String triggerId, String parentInstanceId, String subInstanceName, String instanceParam) {
-        return false;
+    public String newJobInstanceIfAbsent(String triggerId, String parentInstanceId, String subInstanceName, String instanceParam) {
+        return null;
     }
 
 

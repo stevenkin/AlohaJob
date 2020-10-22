@@ -18,6 +18,8 @@ public class JobInstanceDo {
     private Long appId;
     // 任务实例ID
     private String instanceId;
+    // 父任务实例ID
+    private String parentInstanceId;
     // 关联的trigger，代表属于哪次触发
     private String triggerId;
     // 任务实例名
