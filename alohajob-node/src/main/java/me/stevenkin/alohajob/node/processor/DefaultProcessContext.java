@@ -3,12 +3,12 @@ package me.stevenkin.alohajob.node.processor;
 import lombok.Setter;
 import me.stevenkin.alohajob.common.dto.JobInstanceDto;
 import me.stevenkin.alohajob.common.dto.JobInstanceResultDto;
+import me.stevenkin.alohajob.node.core.ProcessResultPromise;
 import me.stevenkin.alohajob.node.core.SchedulerServerClient;
 import me.stevenkin.alohajob.node.utils.DtoUtils;
-import me.stevenkin.alohajob.sdk.AlohaFuture;
+import me.stevenkin.alohajob.sdk.Promise;
 import me.stevenkin.alohajob.sdk.ProcessContext;
 import me.stevenkin.alohajob.sdk.ProcessResult;
-import me.stevenkin.alohajob.sdk.ProcessResultType;
 import org.springframework.beans.BeanUtils;
 
 import java.util.concurrent.*;
@@ -20,11 +20,11 @@ public class DefaultProcessContext extends ProcessContext {
 
     private SchedulerServerClient client;
 
-    private ConcurrentMap<String, AlohaFuture<ProcessResult>> futureMap;
+    private ConcurrentMap<String, Promise<ProcessResult>> futureMap;
 
     private ScheduledExecutorService service;
 
-    public DefaultProcessContext(JobInstanceDto dto, SchedulerServerClient client, ConcurrentMap<String, AlohaFuture<ProcessResult>> map) {
+    public DefaultProcessContext(JobInstanceDto dto, SchedulerServerClient client, ConcurrentMap<String, Promise<ProcessResult>> map) {
         this.dto = dto;
         this.client = client;
         this.futureMap = map;
@@ -41,10 +41,10 @@ public class DefaultProcessContext extends ProcessContext {
     }
 
     @Override
-    public AlohaFuture<ProcessResult> newInstance(String instanceName, String instanceParam) {
+    public Promise<ProcessResult> newInstance(String instanceName, String instanceParam) {
         String instanceId = client.newJobInstance(getTriggerId(), getInstanceId(), instanceName, instanceParam);
         JobInstanceStatusChecker checker = new JobInstanceStatusChecker(instanceId);
-        AlohaFuture<ProcessResult> future = buildFuture(dto, checker);
+        Promise<ProcessResult> future = buildFuture(dto, checker);
         futureMap.put(instanceId, future);
         ScheduledFuture<?> scheduledFuture = service.schedule(checker, 60, TimeUnit.SECONDS);
         checker.setFuture(scheduledFuture);
@@ -52,13 +52,12 @@ public class DefaultProcessContext extends ProcessContext {
         return future;
     }
 
-    private AlohaFuture<ProcessResult> buildFuture(JobInstanceDto dto, JobInstanceStatusChecker checker) {
-        // new AlohaFuture<ProcessResult>(dto, checker, futureMap)
-        return null;
+    private Promise<ProcessResult> buildFuture(JobInstanceDto dto, JobInstanceStatusChecker checker) {
+        return new ProcessResultPromise(dto, checker, client, futureMap);
     }
 
     @Override
-    public AlohaFuture<ProcessResult> newInstanceIfAbsent(String instanceName, String instanceParam) {
+    public Promise<ProcessResult> newInstanceIfAbsent(String instanceName, String instanceParam) {
         return null;
     }
 
@@ -67,7 +66,7 @@ public class DefaultProcessContext extends ProcessContext {
         service.shutdown();
     }
 
-    private class JobInstanceStatusChecker implements Runnable {
+    public class JobInstanceStatusChecker implements Runnable {
         private String instanceId;
         @Setter
         private ScheduledFuture<?> future;
@@ -89,7 +88,7 @@ public class DefaultProcessContext extends ProcessContext {
             JobInstanceDto instanceDto = client.getJobInstance(instanceId);
             if (instanceDto == null || !(isFinish(of(instanceDto.getStatus())) || instanceDto.getCallbackFinish()))
                 return;
-            AlohaFuture<ProcessResult> future1;
+            Promise<ProcessResult> future1;
             boolean isFinish = true;
             if (instanceDto.getCallbackFinish()) {
                 future1 = futureMap.remove(instanceId);

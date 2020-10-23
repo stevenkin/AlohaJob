@@ -29,9 +29,9 @@ public abstract class ProcessContext {
 
     private AlohaJobLogger logger;
 
-    public abstract AlohaFuture<ProcessResult> newInstance(String instanceName, String instanceParam);
+    public abstract Promise<ProcessResult> newInstance(String instanceName, String instanceParam);
 
-    public abstract AlohaFuture<ProcessResult> newInstanceIfAbsent(String instanceName, String instanceParam);
+    public abstract Promise<ProcessResult> newInstanceIfAbsent(String instanceName, String instanceParam);
 
     public abstract void close();
 }

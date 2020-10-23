@@ -21,7 +21,7 @@ public class DefaultTaskExecutor extends Lifecycle implements TaskExecutor {
 
     private ExecutorService executor;
 
-    private ConcurrentMap<String, ConcurrentMap<String, AlohaFuture<ProcessResult>>> futureMap;
+    private ConcurrentMap<String, ConcurrentMap<String, Promise<ProcessResult>>> futureMap;
 
     public DefaultTaskExecutor(AlohaJobNode node) {
         this.node = node;
@@ -85,8 +85,8 @@ public class DefaultTaskExecutor extends Lifecycle implements TaskExecutor {
         return null;
     }
 
-    public AlohaFuture<ProcessResult> getFuture(String parentInstanceId, String subInstanceId) {
-        ConcurrentMap<String, AlohaFuture<ProcessResult>> futureConcurrentMap = futureMap.get(parentInstanceId);
+    public Promise<ProcessResult> getFuture(String parentInstanceId, String subInstanceId) {
+        ConcurrentMap<String, Promise<ProcessResult>> futureConcurrentMap = futureMap.get(parentInstanceId);
         if (futureConcurrentMap == null)
             return null;
         return futureConcurrentMap.get(subInstanceId);

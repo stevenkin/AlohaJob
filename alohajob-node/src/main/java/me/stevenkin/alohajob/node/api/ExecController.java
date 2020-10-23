@@ -6,7 +6,7 @@ import me.stevenkin.alohajob.common.response.Response;
 import me.stevenkin.alohajob.node.AlohaJobNode;
 import me.stevenkin.alohajob.node.core.SchedulerServerClient;
 import me.stevenkin.alohajob.node.utils.DtoUtils;
-import me.stevenkin.alohajob.sdk.AlohaFuture;
+import me.stevenkin.alohajob.sdk.Promise;
 import me.stevenkin.alohajob.sdk.ProcessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +25,7 @@ public class ExecController {
 
     @PostMapping(value = "/onComplete")
     public Response complete(@RequestBody JobInstanceDto dto) {
-        AlohaFuture<ProcessResult> future = node.getTaskExecutor().getFuture(dto.getParentInstanceId(), dto.getInstanceId());
+        Promise<ProcessResult> future = node.getTaskExecutor().getFuture(dto.getParentInstanceId(), dto.getInstanceId());
         if (future == null)
             return Response.failed("not found future");
         ProcessResult result = DtoUtils.toProcessResult(client.getJobInstanceResult(dto.getInstanceId()));
@@ -37,7 +37,7 @@ public class ExecController {
 
     @PostMapping(value = "/onCallbackComplete")
     public Response callbackComplete(@RequestBody JobInstanceDto dto) {
-        AlohaFuture<ProcessResult> future = node.getTaskExecutor().getFuture(dto.getParentInstanceId(), dto.getInstanceId());
+        Promise<ProcessResult> future = node.getTaskExecutor().getFuture(dto.getParentInstanceId(), dto.getInstanceId());
         if (future == null)
             return Response.failed("not found future");
         future.callbackComplete();
