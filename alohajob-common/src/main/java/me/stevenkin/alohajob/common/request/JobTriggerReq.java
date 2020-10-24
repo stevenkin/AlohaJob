@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class NodeTriggerReq {
+public class JobTriggerReq {
     private Long appId;
 
     private Long jobId;

@@ -3,7 +3,7 @@ package me.stevenkin.alohajob.node.api;
 import lombok.extern.slf4j.Slf4j;
 import me.stevenkin.alohajob.common.request.NodeStartReq;
 import me.stevenkin.alohajob.common.request.NodeStopReq;
-import me.stevenkin.alohajob.common.request.NodeTriggerReq;
+import me.stevenkin.alohajob.common.request.JobTriggerReq;
 import me.stevenkin.alohajob.common.response.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class NodeController {
     @PostMapping(value = "/trigger")
-    public Response<NodeTriggerResp> trigger(@RequestBody NodeTriggerReq nodeTriggerReq) {
+    public Response<JobTriggerResp> trigger(@RequestBody JobTriggerReq jobTriggerReq) {
         return null;
     }
 

@@ -4,14 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import me.stevenkin.alohajob.common.Lifecycle;
 import me.stevenkin.alohajob.common.dto.JobDto;
 import me.stevenkin.alohajob.common.dto.JobInstanceDto;
+import me.stevenkin.alohajob.common.dto.JobInstanceResultDto;
 import me.stevenkin.alohajob.common.dto.JobTriggerDto;
 import me.stevenkin.alohajob.common.utils.Executors;
+import me.stevenkin.alohajob.common.utils.Holder;
 import me.stevenkin.alohajob.node.AlohaJobNode;
+import me.stevenkin.alohajob.node.utils.DtoUtils;
 import me.stevenkin.alohajob.sdk.*;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 
 import static me.stevenkin.alohajob.common.enums.JobTriggerStatus.*;
 
@@ -21,11 +22,16 @@ public class DefaultTaskExecutor extends Lifecycle implements TaskExecutor {
 
     private ExecutorService executor;
 
+    private ExecutorService instanceExecutor;
+
     private ConcurrentMap<String, ConcurrentMap<String, Promise<ProcessResult>>> futureMap;
+
+    private ConcurrentMap<String, Future<ProcessResult>> resultFutureMap;
 
     public DefaultTaskExecutor(AlohaJobNode node) {
         this.node = node;
         this.futureMap = new ConcurrentHashMap<>();
+        this.resultFutureMap = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -57,13 +63,31 @@ public class DefaultTaskExecutor extends Lifecycle implements TaskExecutor {
                     continue;
                 ProcessContext context = buildProcessContext(dto);
                 Processor processor = findProcessor(jobDto);
-                ProcessResult result;
+                CountDownLatch latch = new CountDownLatch(1);
+                Future<ProcessResult> resultFuture = instanceExecutor.submit(() -> {
+                    try {
+                        latch.await();
+                    } catch (Exception ignore) {
+
+                    }
+                    ProcessResult result1;
+                    try {
+                        result1 = processor.process(context);
+                    } catch (Exception e) {
+                        result1 = new ProcessResult(ProcessResultType.FAIL, e.getMessage());
+                    }
+                    return result1;
+                });
+                resultFutureMap.put(context.getInstanceId(), resultFuture);
+                latch.countDown();
+                ProcessResult result = null;
                 try {
-                    result = processor.process(context);
-                } catch (Exception e) {
-                    result = new ProcessResult(ProcessResultType.FAIL, e.getMessage());
+                    result = resultFuture.get();
+                    reportResult(dto, result);
+                } catch (Exception ignore) {
+                    //抛了异常，说明实例执行进程被中断了,对应的数据库job instance记录已经被设置为CNACEL，因此忽略这个异常
                 }
-                reportResult(dto, result);
+
                 reportIfCallbackComplete(context);
             }
         });
@@ -94,11 +118,13 @@ public class DefaultTaskExecutor extends Lifecycle implements TaskExecutor {
 
     @Override
     public void doStart() {
-        executor = Executors.newExecutor(node.getProperties().getExecutorThreadNum(), node.getProperties().getExecutorQueueSize(), "DefaultTaskExecutor-");
+        executor = Executors.newExecutor(node.getProperties().getExecutorThreadNum(), node.getProperties().getExecutorQueueSize(), "defaultTaskExecutor-");
+        instanceExecutor = Executors.newExecutor(node.getProperties().getExecutorThreadNum() * 5, node.getProperties().getExecutorQueueSize() * 10, "instanceTaskExecutor-");
     }
 
     @Override
     public void doStop() {
         executor.shutdown();
+        instanceExecutor.shutdown();
     }
 }
