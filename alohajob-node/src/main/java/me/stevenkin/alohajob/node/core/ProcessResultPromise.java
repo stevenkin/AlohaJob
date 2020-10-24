@@ -10,10 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 public class ProcessResultPromise implements Promise<ProcessResult> {
     private String instanceId;
@@ -89,6 +86,8 @@ public class ProcessResultPromise implements Promise<ProcessResult> {
     public boolean cancel(boolean mayInterruptIfRunning) {
         if (isCancelled())
             return true;
+        if (isDone())
+            return false;
         if (!mayInterruptIfRunning)
             return false;
         for (;;) {
@@ -97,8 +96,8 @@ public class ProcessResultPromise implements Promise<ProcessResult> {
         }
         for (;;) {
             synchronized (this) {
-                if (isCancelled())
-                    return true;
+                if (isDone())
+                    return isCancelled();
                 try {
                     wait();
                 } catch (InterruptedException e) {
@@ -120,11 +119,54 @@ public class ProcessResultPromise implements Promise<ProcessResult> {
 
     @Override
     public ProcessResult get() throws InterruptedException, ExecutionException {
-        return null;
+        if (isDone()) {
+            if (isCancelled())
+                throw new CancellationException();
+            return result;
+        }
+        for (;;) {
+            synchronized (this) {
+                if (isDone())
+                    break;
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    throw new InterruptedException();
+                }
+            }
+        }
+        if (isCancelled())
+            throw new CancellationException();
+        return result;
     }
 
     @Override
     public ProcessResult get(long timeout, @NotNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return null;
+        if (timeout < 0)
+            throw new IllegalArgumentException();
+        if (isDone()) {
+            if (isCancelled())
+                throw new CancellationException();
+            return result;
+        }
+        long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
+        for (;;) {
+            synchronized (this) {
+                if (System.currentTimeMillis() >= deadline)
+                    break;
+                if (isDone())
+                    break;
+                try {
+                    wait(deadline - System.currentTimeMillis());
+                } catch (InterruptedException e) {
+                    throw e;
+                }
+            }
+        }
+        if (!isDone())
+            throw new TimeoutException();
+        if (isCancelled())
+            throw new CancellationException();
+        return result;
     }
 }
