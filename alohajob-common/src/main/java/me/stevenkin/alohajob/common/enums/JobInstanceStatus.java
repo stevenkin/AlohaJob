@@ -8,7 +8,7 @@ public enum JobInstanceStatus {
     DISTRIBUTED(2, "distributed"),
     SUCCESS(3, "success"),
     FAIL(4, "fail"),
-    CALLBACKFINISH(5, "callback finish");
+    CANCEL(5, "cancel");
     @Getter
     private Integer code;
     @Getter
@@ -28,10 +28,10 @@ public enum JobInstanceStatus {
     }
 
     public static boolean isFinish(JobInstanceStatus status) {
-        return status == SUCCESS || status == FAIL;
+        return status == SUCCESS || status == FAIL || status == CANCEL;
     }
 
-    public static boolean isCallbackFinish(JobInstanceStatus status) {
-        return status == CALLBACKFINISH;
+    public static boolean isCancel(JobInstanceStatus status) {
+        return status == CANCEL;
     }
 }

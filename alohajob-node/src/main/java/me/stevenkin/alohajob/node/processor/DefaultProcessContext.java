@@ -44,7 +44,7 @@ public class DefaultProcessContext extends ProcessContext {
     public Promise<ProcessResult> newInstance(String instanceName, String instanceParam) {
         String instanceId = client.newJobInstance(getTriggerId(), getInstanceId(), instanceName, instanceParam);
         JobInstanceStatusChecker checker = new JobInstanceStatusChecker(instanceId);
-        Promise<ProcessResult> future = buildFuture(dto, checker);
+        Promise<ProcessResult> future = buildFuture(instanceId, dto, checker);
         futureMap.put(instanceId, future);
         ScheduledFuture<?> scheduledFuture = service.schedule(checker, 60, TimeUnit.SECONDS);
         checker.setFuture(scheduledFuture);
@@ -52,8 +52,8 @@ public class DefaultProcessContext extends ProcessContext {
         return future;
     }
 
-    private Promise<ProcessResult> buildFuture(JobInstanceDto dto, JobInstanceStatusChecker checker) {
-        return new ProcessResultPromise(dto, checker, client, futureMap);
+    private Promise<ProcessResult> buildFuture(String instanceId, JobInstanceDto dto, JobInstanceStatusChecker checker) {
+        return new ProcessResultPromise(instanceId, dto, checker, client, futureMap);
     }
 
     @Override
@@ -91,11 +91,9 @@ public class DefaultProcessContext extends ProcessContext {
             Promise<ProcessResult> future1;
             boolean isFinish = true;
             if (instanceDto.getCallbackFinish()) {
-                future1 = futureMap.remove(instanceId);
                 isFinish = false;
-            } else {
-                future1 = futureMap.get(instanceId);
             }
+            future1 = futureMap.get(instanceId);
             if (future1 == null)
                 return;
             JobInstanceResultDto resultDto = client.getJobInstanceResult(instanceId);
@@ -103,7 +101,10 @@ public class DefaultProcessContext extends ProcessContext {
                 throw new NullPointerException();
             ProcessResult result = DtoUtils.toProcessResult(resultDto);
             if (isFinish)
-                future1.complete(result);
+                if (isCancel(of(instanceDto.getStatus())))
+                    future1.cancel();
+                else
+                    future1.complete(result);
             else
                 future1.callbackComplete();
         }

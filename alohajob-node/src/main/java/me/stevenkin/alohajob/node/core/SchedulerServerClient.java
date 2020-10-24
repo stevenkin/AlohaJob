@@ -42,6 +42,14 @@ public class SchedulerServerClient {
         return false;
     }
 
+    public boolean cancelInstance(String instanceId) {
+        return false;
+    }
+
+    public boolean callbackCompleteInstance(String instanceId) {
+        return false;
+    }
+
     public boolean checkJobInstanceIsExist(String instanceId) {
         return false;
     }

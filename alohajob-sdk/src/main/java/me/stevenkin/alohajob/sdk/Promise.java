@@ -10,4 +10,6 @@ public interface Promise<V> extends Future<V> {
     void complete(V v);
 
     void callbackComplete();
+
+    void cancel();
 }

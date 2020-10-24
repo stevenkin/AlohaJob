@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class ProcessResultPromise implements Promise<ProcessResult> {
+    private String instanceId;
+
     private JobInstanceDto dto;
 
     private DefaultProcessContext.JobInstanceStatusChecker checker;
@@ -26,12 +28,18 @@ public class ProcessResultPromise implements Promise<ProcessResult> {
 
     private List<JobListener> listeners;
 
-    public ProcessResultPromise(JobInstanceDto dto, DefaultProcessContext.JobInstanceStatusChecker checker, SchedulerServerClient client, ConcurrentMap<String, Promise<ProcessResult>> futureMap) {
+    private volatile ProcessResult result;
+
+    private volatile boolean isCompleted;
+
+    public ProcessResultPromise(String instanceId, JobInstanceDto dto, DefaultProcessContext.JobInstanceStatusChecker checker, SchedulerServerClient client, ConcurrentMap<String, Promise<ProcessResult>> futureMap) {
+        this.instanceId = instanceId;
         this.dto = dto;
         this.checker = checker;
         this.client = client;
         this.futureMap = futureMap;
         this.listeners = new ArrayList<>();
+        this.isCompleted = false;
     }
 
     @Override
@@ -54,28 +62,60 @@ public class ProcessResultPromise implements Promise<ProcessResult> {
     }
 
     @Override
-    public void complete(ProcessResult result) {
-
+    public synchronized void complete(ProcessResult result) {
+        this.result = result;
+        this.isCompleted = true;
+        notifyAll();
     }
 
     @Override
     public void callbackComplete() {
+        futureMap.remove(instanceId);
+        if (futureMap.isEmpty()) {
+            client.callbackCompleteInstance(dto.getInstanceId());
+        }
+    }
 
+    @Override
+    public synchronized void cancel() {
+        if (isCompleted)
+            return;
+        isCompleted = true;
+        result = null;
+        notifyAll();
     }
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
-        return false;
+        if (isCancelled())
+            return true;
+        if (!mayInterruptIfRunning)
+            return false;
+        for (;;) {
+            if (client.cancelInstance(instanceId))
+                break;
+        }
+        for (;;) {
+            synchronized (this) {
+                if (isCancelled())
+                    return true;
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+
+                }
+            }
+        }
     }
 
     @Override
     public boolean isCancelled() {
-        return false;
+        return isDone() && result == null;
     }
 
     @Override
     public boolean isDone() {
-        return false;
+        return isCompleted;
     }
 
     @Override
