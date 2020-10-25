@@ -116,6 +116,10 @@ public class DefaultTaskExecutor extends Lifecycle implements TaskExecutor {
         return futureConcurrentMap.get(subInstanceId);
     }
 
+    public Future<ProcessResult> getProcessFuture(String instanceId) {
+        return resultFutureMap.get(instanceId);
+    }
+
     @Override
     public void doStart() {
         executor = Executors.newExecutor(node.getProperties().getExecutorThreadNum(), node.getProperties().getExecutorQueueSize(), "defaultTaskExecutor-");
