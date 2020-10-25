@@ -1,11 +1,13 @@
 package me.stevenkin.alohajob.server.repository;
 
 import me.stevenkin.alohajob.server.model.AppDo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class AppRepository {
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     public AppRepository(JdbcTemplate jdbcTemplate) {

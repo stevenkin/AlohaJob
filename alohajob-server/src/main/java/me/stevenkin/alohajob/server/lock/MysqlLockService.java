@@ -23,7 +23,7 @@ public class MysqlLockService implements LockService {
     @Override
     public Lock getLock(String name) {
         jdbcTemplate.queryForObject("select * from app where id = ?", new Object[]{Integer.parseInt(name)}, (rs, i) ->
-            new AppDo(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getDate(5), rs.getDate(6))
+            new AppDo(rs.getLong(1), rs.getString(2), rs.getLong(3), rs.getString(4), rs.getString(5), rs.getDate(6), rs.getDate(7))
         );
         return new Lock() {
             private Connection connection;
@@ -39,7 +39,7 @@ public class MysqlLockService implements LockService {
             @Override
             public void lock() {
                 jdbcTemplate.queryForObject("select * from app where id = ? for update", new Object[]{Integer.parseInt(name)}, (rs, i) ->
-                        new AppDo(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getDate(5), rs.getDate(6))
+                        new AppDo(rs.getLong(1), rs.getString(2), rs.getLong(3), rs.getString(4), rs.getString(5), rs.getDate(6), rs.getDate(7))
                 );
             }
 
