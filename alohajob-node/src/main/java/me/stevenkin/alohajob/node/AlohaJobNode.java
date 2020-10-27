@@ -25,6 +25,7 @@ public class AlohaJobNode extends Lifecycle implements InitializingBean, Applica
     @Autowired
     private NodeAddress address;
     @Autowired
+    @Getter
     private ProcessorPool processorPool;
     @Getter
     private DefaultTaskExecutor taskExecutor;

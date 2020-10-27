@@ -5,6 +5,8 @@ import lombok.Setter;
 import lombok.ToString;
 import me.stevenkin.alohajob.common.logger.AlohaJobLogger;
 
+import java.util.concurrent.Future;
+
 @Getter
 @Setter
 @ToString
@@ -32,6 +34,12 @@ public abstract class ProcessContext {
     public abstract Promise<ProcessResult> newInstance(String instanceName, String instanceParam);
 
     public abstract Promise<ProcessResult> newInstanceIfAbsent(String instanceName, String instanceParam);
+
+    public abstract boolean isCallbackComplete();
+
+    public abstract Future<?> submit(Runnable task);
+
+    public abstract void sync();
 
     public abstract void close();
 }

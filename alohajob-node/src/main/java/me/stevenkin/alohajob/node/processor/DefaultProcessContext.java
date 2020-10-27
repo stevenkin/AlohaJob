@@ -3,6 +3,7 @@ package me.stevenkin.alohajob.node.processor;
 import lombok.Setter;
 import me.stevenkin.alohajob.common.dto.JobInstanceDto;
 import me.stevenkin.alohajob.common.dto.JobInstanceResultDto;
+import me.stevenkin.alohajob.common.utils.Executors;
 import me.stevenkin.alohajob.node.core.ProcessResultPromise;
 import me.stevenkin.alohajob.node.core.SchedulerServerClient;
 import me.stevenkin.alohajob.node.utils.DtoUtils;
@@ -24,6 +25,8 @@ public class DefaultProcessContext extends ProcessContext {
 
     private ScheduledExecutorService service;
 
+    private ExecutorService executorService;
+
     public DefaultProcessContext(JobInstanceDto dto, SchedulerServerClient client, ConcurrentMap<String, Promise<ProcessResult>> map) {
         this.dto = dto;
         this.client = client;
@@ -32,6 +35,8 @@ public class DefaultProcessContext extends ProcessContext {
         BeanUtils.copyProperties(dto, this);
 
         service = new ScheduledThreadPoolExecutor(10);
+
+        executorService = Executors.newExecutor(10, 1000, "taskExecutorService-");
 
         setLogger();
     }
@@ -62,8 +67,31 @@ public class DefaultProcessContext extends ProcessContext {
     }
 
     @Override
+    public boolean isCallbackComplete() {
+        return futureMap.isEmpty();
+    }
+
+    @Override
+    public Future<?> submit(Runnable task) {
+        return executorService.submit(task);
+    }
+
+    @Override
+    public void sync() {
+        for (;;) {
+            try {
+                if (executorService.awaitTermination(2, TimeUnit.SECONDS))
+                    break;
+            } catch (InterruptedException ignore) {
+
+            }
+        }
+    }
+
+    @Override
     public void close() {
         service.shutdown();
+        executorService.shutdown();
     }
 
     public class JobInstanceStatusChecker implements Runnable {
