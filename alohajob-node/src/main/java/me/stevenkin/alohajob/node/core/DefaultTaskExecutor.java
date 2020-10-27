@@ -83,9 +83,8 @@ public class DefaultTaskExecutor extends Lifecycle implements TaskExecutor {
                 });
                 resultFutureMap.put(context.getInstanceId(), resultFuture);
                 latch.countDown();
-                ProcessResult result = null;
                 try {
-                    result = resultFuture.get();
+                    ProcessResult result = resultFuture.get();
                     reportResult(dto, result);
                 } catch (Exception ignore) {
                     //抛了异常，说明实例执行进程被中断了,对应的数据库job instance记录已经被设置为CNACEL，因此忽略这个异常
@@ -99,7 +98,6 @@ public class DefaultTaskExecutor extends Lifecycle implements TaskExecutor {
     private void reportIfCallbackComplete(ProcessContext context) {
         if (context.isCallbackComplete())
             node.getClient().callbackCompleteInstance(context.getInstanceId());
-
     }
 
     private void reportResult(JobInstanceDto dto, ProcessResult result) {
