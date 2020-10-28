@@ -1,12 +1,21 @@
 package me.stevenkin.alohajob.node.core;
 
 import me.stevenkin.alohajob.common.dto.*;
+import me.stevenkin.alohajob.node.service.OnlineService;
 import me.stevenkin.alohajob.sdk.ProcessResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 @Component
 public class SchedulerServerClient {
+    @Autowired
+    private RestTemplate restTemplate;
+    @Autowired
+    private OnlineService onlineService;
+
     public UserDto getUser(Long id) {
+        String url = "";
         return null;
     }
 

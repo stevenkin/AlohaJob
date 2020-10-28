@@ -1,6 +1,5 @@
 package me.stevenkin.alohajob.server.service;
 
-import me.stevenkin.alohajob.common.extension.ExtensionLoader;
 import me.stevenkin.alohajob.server.ServerAddress;
 import me.stevenkin.alohajob.server.cluster.ServerCluster;
 import me.stevenkin.alohajob.server.config.AlohaJobServerProperties;
@@ -15,7 +14,7 @@ import java.util.Date;
 import java.util.concurrent.locks.Lock;
 
 @Service
-public class ServerElectionService {
+public class ServerGetService {
     private static final int MAX_FAIL_NUM = 3;
     @Autowired
     private AppRepository appRepository;
@@ -29,13 +28,13 @@ public class ServerElectionService {
     private AlohaJobServerProperties alohajobServerProperties;
 
     /**
-     * 当current server 心跳失败后重新选举服务器
+     * 当current server心跳失败后重新获取服务器
      * @param appId
      * @param currentServer
      * @param failNum
      * @return
      */
-    public String electServer(Long appId, String currentServer, Integer failNum) {
+    public String getServer(Long appId, String currentServer, Integer failNum) {
         // 0.当通信已经失败的服务器又通了，就不需要重新选举了
         if (StringUtils.isNotEmpty(currentServer) && currentServer.equals(serverAddress.get()))
             return currentServer;

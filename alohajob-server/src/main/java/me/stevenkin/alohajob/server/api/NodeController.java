@@ -5,13 +5,13 @@ import me.stevenkin.alohajob.common.request.AppLoginReq;
 import me.stevenkin.alohajob.common.request.AppLogoutReq;
 import me.stevenkin.alohajob.common.request.WorkerHeartBeatReq;
 import me.stevenkin.alohajob.common.response.AppLoginResp;
-import me.stevenkin.alohajob.common.response.ElectionResp;
+import me.stevenkin.alohajob.common.response.GetServerResp;
 import me.stevenkin.alohajob.common.response.Response;
 import me.stevenkin.alohajob.common.response.WorkerHeartBeatResp;
 import me.stevenkin.alohajob.server.cluster.WorkersClusterManager;
 import me.stevenkin.alohajob.server.config.AlohaJobServerProperties;
 import me.stevenkin.alohajob.server.service.AppService;
-import me.stevenkin.alohajob.server.service.ServerElectionService;
+import me.stevenkin.alohajob.server.service.ServerGetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +24,7 @@ public class NodeController {
     @Autowired
     private AppService appService;
     @Autowired
-    private ServerElectionService serverElectionService;
+    private ServerGetService serverGetService;
     @Autowired
     private WorkersClusterManager workersClusterManager;
     @Autowired
@@ -41,9 +41,9 @@ public class NodeController {
         return Response.success(null);
     }
 
-    @GetMapping("/election")
-    public Response<ElectionResp> election(@RequestParam Long appId, @RequestParam String currentServer, @RequestParam Integer failNum) {
-        return Response.success(new ElectionResp(serverElectionService.electServer(appId, currentServer, failNum)));
+    @GetMapping("/getServer")
+    public Response<GetServerResp> getServer(@RequestParam Long appId, @RequestParam String currentServer, @RequestParam Integer failNum) {
+        return Response.success(new GetServerResp(serverGetService.getServer(appId, currentServer, failNum)));
     }
 
     @PostMapping("/heartbeat")

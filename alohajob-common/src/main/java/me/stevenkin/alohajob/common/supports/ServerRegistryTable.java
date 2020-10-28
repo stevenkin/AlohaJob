@@ -1,4 +1,4 @@
-package me.stevenkin.alohajob.registry.memory;
+package me.stevenkin.alohajob.common.supports;
 
 import org.springframework.stereotype.Component;
 

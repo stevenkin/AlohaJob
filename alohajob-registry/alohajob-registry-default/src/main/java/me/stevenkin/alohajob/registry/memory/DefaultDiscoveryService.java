@@ -1,6 +1,7 @@
 package me.stevenkin.alohajob.registry.memory;
 
 import me.stevenkin.alohajob.common.extension.SpiImp;
+import me.stevenkin.alohajob.common.supports.ServerRegistryTable;
 import me.stevenkin.alohajob.registry.api.DiscoveryService;
 import me.stevenkin.alohajob.registry.api.NotifyListener;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,6 +2,7 @@ package me.stevenkin.alohajob.registry.memory;
 
 import lombok.extern.slf4j.Slf4j;
 import me.stevenkin.alohajob.common.extension.SpiImp;
+import me.stevenkin.alohajob.common.supports.ServerRegistryTable;
 import me.stevenkin.alohajob.registry.api.RegistryService;
 import org.springframework.beans.factory.annotation.Autowired;
 

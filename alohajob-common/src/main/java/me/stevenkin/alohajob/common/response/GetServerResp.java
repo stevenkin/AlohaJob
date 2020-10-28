@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ElectionResp {
+public class GetServerResp {
     private String currentServer;
 }

@@ -28,7 +28,7 @@
         <dependency>
             <groupId>me.stevenkin</groupId>
             <artifactId>alohajob-sdk</artifactId>
-            <version>1.0.0</version>
+            <version>${parent.version}</version>
         </dependency>
 
         <!-- Spring 依赖 -->
@@ -52,6 +52,12 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.stevenkin</groupId>
+            <artifactId>alohajob-registry-api</artifactId>
+            <version>${parent.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
