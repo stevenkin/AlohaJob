@@ -1,27 +1,34 @@
 package me.stevenkin.alohajob.node.api;
 
 import lombok.extern.slf4j.Slf4j;
-import me.stevenkin.alohajob.common.request.NodeStartReq;
-import me.stevenkin.alohajob.common.request.NodeStopReq;
 import me.stevenkin.alohajob.common.response.*;
+import me.stevenkin.alohajob.node.AlohaJobNode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/node")
 @Slf4j
 public class NodeController {
-    @PostMapping(value = "/start")
-    public Response<NodeStartResp> start(@RequestBody NodeStartReq nodeStartReq) {
-        return null;
+    @Autowired
+    private AlohaJobNode node;
+    @GetMapping(value = "/start")
+    public Response start() {
+        node.start();
+        return Response.success(null);
     }
 
-    @PostMapping(value = "/stop")
-    public Response<NodeStopResp> stop(@RequestBody NodeStopReq nodeStopReq) {
-        return null;
+    @GetMapping(value = "/stop")
+    public Response stop() {
+        node.stop();
+        return Response.success(null);
     }
 
     @GetMapping("/status")
     public Response<NodeStatus> status() {
-        return null;
+        NodeStatus status = node.getStatus();
+        if (status == null)
+            return Response.failed("node already stop");
+        return Response.success(status);
     }
 }

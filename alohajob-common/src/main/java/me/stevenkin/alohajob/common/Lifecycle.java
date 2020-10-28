@@ -12,7 +12,7 @@ public abstract class Lifecycle {
 
     protected abstract void doStart();
 
-    boolean isStarted() {
+    public boolean isStarted() {
         return isStarted;
     }
 
@@ -25,7 +25,7 @@ public abstract class Lifecycle {
 
     protected abstract void doStop();
 
-    boolean isStopped() {
+    public boolean isStopped() {
         return !isStarted;
     }
 }

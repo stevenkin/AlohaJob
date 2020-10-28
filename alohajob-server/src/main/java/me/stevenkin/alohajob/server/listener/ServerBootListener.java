@@ -20,7 +20,7 @@ public class ServerBootListener implements ApplicationListener<ApplicationEvent>
     @Autowired
     private ServerAddress serverAddress;
     @Autowired
-    private AlohaJobServerProperties AlohaJobServerProperties;
+    private AlohaJobServerProperties properties;
 
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
@@ -34,17 +34,15 @@ public class ServerBootListener implements ApplicationListener<ApplicationEvent>
     private void start() {
         log.info("server {} starting", serverAddress.get());
         registryService.registerServer(serverAddress.get());
-        log.info("server {} started", serverAddress.get());
     }
 
     private void stop() {
         log.info("server {} stopping", serverAddress.get());
         registryService.unregisterServer(serverAddress.get());
-        log.info("server {} stoped", serverAddress.get());
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        registryService = ExtensionLoader.getExtensionLoader(RegistryService.class).getExtension(AlohaJobServerProperties.getRegistryService());
+        registryService = ExtensionLoader.getExtensionLoader(RegistryService.class).getExtension(properties.getRegistryService());
     }
 }

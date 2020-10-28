@@ -18,8 +18,9 @@ public class JobController {
     @Autowired
     private AlohaJobNode node;
     @PostMapping(value = "/trigger")
-    public Response<JobTriggerResp> trigger(@RequestBody JobTriggerReq jobTriggerReq) {
-        return null;
+    public Response trigger(@RequestBody JobTriggerReq jobTriggerReq) {
+        node.trigger(jobTriggerReq.getAppId(), jobTriggerReq.getJobId(), jobTriggerReq.getTriggerId());
+        return Response.success(null);
     }
 
     @GetMapping(value = "/cancel")
