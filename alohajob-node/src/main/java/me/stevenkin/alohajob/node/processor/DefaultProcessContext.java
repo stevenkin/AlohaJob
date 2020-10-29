@@ -46,7 +46,7 @@ public class DefaultProcessContext extends ProcessContext {
     }
 
     @Override
-    public Promise<ProcessResult> newInstance(String instanceName, String instanceParam) {
+    public Promise<ProcessResult> newInstance(String instanceName, String instanceParam) throws Exception {
         String instanceId = client.newJobInstance(getTriggerId(), getInstanceId(), instanceName, instanceParam);
         JobInstanceStatusChecker checker = new JobInstanceStatusChecker(instanceId);
         Promise<ProcessResult> future = buildFuture(instanceId, dto, checker);
@@ -59,11 +59,6 @@ public class DefaultProcessContext extends ProcessContext {
 
     private Promise<ProcessResult> buildFuture(String instanceId, JobInstanceDto dto, JobInstanceStatusChecker checker) {
         return new ProcessResultPromise(instanceId, dto, checker, client, futureMap);
-    }
-
-    @Override
-    public Promise<ProcessResult> newInstanceIfAbsent(String instanceName, String instanceParam) {
-        return null;
     }
 
     @Override
@@ -110,31 +105,31 @@ public class DefaultProcessContext extends ProcessContext {
         public void run() {
             try {
                 latch.await();
-            } catch (InterruptedException ignore) {
-
-            }
-            JobInstanceDto instanceDto = client.getJobInstance(instanceId);
-            if (instanceDto == null || !(isFinish(of(instanceDto.getStatus())) || instanceDto.getCallbackFinish()))
-                return;
-            Promise<ProcessResult> future1;
-            boolean isFinish = true;
-            if (instanceDto.getCallbackFinish()) {
-                isFinish = false;
-            }
-            future1 = futureMap.get(instanceId);
-            if (future1 == null)
-                return;
-            JobInstanceResultDto resultDto = client.getJobInstanceResult(instanceId);
-            if (resultDto == null)
-                throw new NullPointerException();
-            ProcessResult result = DtoUtils.toProcessResult(resultDto);
-            if (isFinish)
-                if (isCancel(of(instanceDto.getStatus())))
-                    future1.cancel();
+                JobInstanceDto instanceDto = client.getJobInstance(instanceId);
+                if (instanceDto == null || !(isFinish(of(instanceDto.getStatus())) || instanceDto.getCallbackFinish()))
+                    return;
+                Promise<ProcessResult> future1;
+                boolean isFinish = true;
+                if (instanceDto.getCallbackFinish()) {
+                    isFinish = false;
+                }
+                future1 = futureMap.get(instanceId);
+                if (future1 == null)
+                    return;
+                JobInstanceResultDto resultDto = client.getJobInstanceResult(instanceId);
+                if (resultDto == null)
+                    throw new NullPointerException();
+                ProcessResult result = DtoUtils.toProcessResult(resultDto);
+                if (isFinish)
+                    if (isCancel(of(instanceDto.getStatus())))
+                        future1.cancel();
+                    else
+                        future1.complete(result);
                 else
-                    future1.complete(result);
-            else
-                future1.callbackComplete();
+                    future1.callbackComplete();
+            } catch (Exception e) {
+                //TODO 告警
+            }
         }
 
         public void start() {

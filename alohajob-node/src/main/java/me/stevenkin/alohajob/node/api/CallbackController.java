@@ -21,7 +21,7 @@ public class CallbackController {
     private SchedulerServerClient client;
 
     @GetMapping(value = "/complete")
-    public Response complete(@RequestParam String parentInstanceId, @RequestParam String subInstanceId) {
+    public Response complete(@RequestParam String parentInstanceId, @RequestParam String subInstanceId) throws Exception {
         Promise<ProcessResult> future = node.getTaskExecutor().getFuture(parentInstanceId, subInstanceId);
         if (future == null)
             return Response.failed("not found future");

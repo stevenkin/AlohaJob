@@ -36,72 +36,84 @@ public class DefaultTaskExecutor extends Lifecycle implements TaskExecutor {
     }
 
     @Override
-    public void execute(Long appId, Long jobId, String triggerId) {
+    public void execute(Long appId, Long jobId, String triggerId) throws Exception {
         String address = node.getAddress().toString();
         JobDto jobDto = node.getClient().getJob(jobId);
         executor.submit(() -> {
-            for (;;) {
-                JobTriggerDto trigger = node.getClient().getJobTrigger(triggerId);
-                if (trigger == null) {
-                    log.error("trigger must not be null");
-                    throw new NullPointerException();
-                }
-                if (isFinish(of(trigger.getStatus()))) {
-                    log.info("trigger {} root instance was finish", triggerId);
-                    break;
-                }
-                JobInstanceDto dto = node.getClient().pullJobInstance(triggerId, address);
-                if (dto == null) {
-                    log.info("pull trigger {}'s instance is null, maybe no instance assign address {}", triggerId, address);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ignore) {
-
+            try {
+                for (;;) {
+                    JobTriggerDto trigger = node.getClient().getJobTrigger(triggerId);
+                    if (trigger == null) {
+                        log.error("trigger must not be null");
+                        throw new NullPointerException();
                     }
-                    continue;
-                }
-                if (dto.getIgnore())
-                    continue;
-                ProcessContext context = buildProcessContext(dto);
-                Processor processor = findProcessor(jobDto);
-                if (processor == null)
-                    throw new NullPointerException(jobDto.getProcessorInfo() + "can not found");
-                CountDownLatch latch = new CountDownLatch(1);
-                Future<ProcessResult> resultFuture = instanceExecutor.submit(() -> {
+                    if (isFinish(of(trigger.getStatus()))) {
+                        log.info("trigger {} root instance was finish", triggerId);
+                        break;
+                    }
+                    JobInstanceDto dto = node.getClient().pullJobInstance(triggerId, address);
+                    if (dto == null) {
+                        log.info("pull trigger {}'s instance is null, maybe no instance assign address {}", triggerId, address);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignore) {
+
+                        }
+                        continue;
+                    }
+                    if (dto.getIgnore())
+                        continue;
+                    ProcessContext context = buildProcessContext(dto);
+                    Processor processor = findProcessor(jobDto);
+                    if (processor == null)
+                        throw new NullPointerException(jobDto.getProcessorInfo() + "can not found");
+                    CountDownLatch latch = new CountDownLatch(1);
+                    Future<ProcessResult> resultFuture = instanceExecutor.submit(() -> {
+                        try {
+                            latch.await();
+                        } catch (Exception ignore) {
+
+                        }
+                        ProcessResult result1;
+                        try {
+                            result1 = processor.process(context);
+                        } catch (Exception e) {
+                            result1 = new ProcessResult(ProcessResultType.FAIL, e.getMessage());
+                        }
+                        return result1;
+                    });
+                    resultFutureMap.put(context.getInstanceId(), resultFuture);
+                    latch.countDown();
                     try {
-                        latch.await();
+                        ProcessResult result = resultFuture.get();
+                        reportResult(dto, result);
                     } catch (Exception ignore) {
-
+                        //抛了异常，说明实例执行进程被中断了,对应的数据库job instance记录已经被设置为CNACEL，因此忽略这个异常
                     }
-                    ProcessResult result1;
-                    try {
-                        result1 = processor.process(context);
-                    } catch (Exception e) {
-                        result1 = new ProcessResult(ProcessResultType.FAIL, e.getMessage());
-                    }
-                    return result1;
-                });
-                resultFutureMap.put(context.getInstanceId(), resultFuture);
-                latch.countDown();
-                try {
-                    ProcessResult result = resultFuture.get();
-                    reportResult(dto, result);
-                } catch (Exception ignore) {
-                    //抛了异常，说明实例执行进程被中断了,对应的数据库job instance记录已经被设置为CNACEL，因此忽略这个异常
+                    context.sync();
+                    reportIfCallbackComplete(context);
                 }
-                context.sync();
-                reportIfCallbackComplete(context);
+            } catch (Exception e) {
+                //TODO 告警
             }
         });
     }
 
-    private void reportIfCallbackComplete(ProcessContext context) {
-        if (context.isCallbackComplete())
+    private void reportIfCallbackComplete(ProcessContext context) throws Exception {
+        if (context.isCallbackComplete()) {
             node.getClient().callbackCompleteInstance(context.getInstanceId());
+        }
     }
 
     private void reportResult(JobInstanceDto dto, ProcessResult result) {
-        node.getClient().finishJobInstance(dto.getInstanceId(), result);
+        //死循环必须把执行结果报告完成
+        for (;;) {
+            try {
+                node.getClient().finishJobInstance(dto.getInstanceId(), result);
+            } catch (Exception e) {
+                //TODO 告警
+            }
+        }
     }
 
     private Processor findProcessor(JobDto jobDto) {

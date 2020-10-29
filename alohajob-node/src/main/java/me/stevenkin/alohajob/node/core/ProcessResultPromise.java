@@ -69,7 +69,14 @@ public class ProcessResultPromise implements Promise<ProcessResult> {
     public void callbackComplete() {
         futureMap.remove(instanceId);
         if (futureMap.isEmpty()) {
-            client.callbackCompleteInstance(dto.getInstanceId());
+            for (;;) {
+                try {
+                    client.callbackCompleteInstance(instanceId);
+                    break;
+                } catch (Exception e) {
+                    //TODO 告警
+                }
+            }
         }
     }
 
@@ -90,9 +97,14 @@ public class ProcessResultPromise implements Promise<ProcessResult> {
             return false;
         if (!mayInterruptIfRunning)
             return false;
+        //死循环直到实例被置为取消或其他结束状态时才跳出
         for (;;) {
-            if (client.cancelInstance(instanceId))
+            try {
+                client.cancelInstance(instanceId);
                 break;
+            } catch (Exception e) {
+                //TODO 告警
+            }
         }
         for (;;) {
             synchronized (this) {
@@ -100,7 +112,7 @@ public class ProcessResultPromise implements Promise<ProcessResult> {
                     return isCancelled();
                 try {
                     wait();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignore) {
 
                 }
             }

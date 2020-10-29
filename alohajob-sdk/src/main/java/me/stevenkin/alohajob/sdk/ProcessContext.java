@@ -31,9 +31,7 @@ public abstract class ProcessContext {
 
     private AlohaJobLogger logger;
 
-    public abstract Promise<ProcessResult> newInstance(String instanceName, String instanceParam);
-
-    public abstract Promise<ProcessResult> newInstanceIfAbsent(String instanceName, String instanceParam);
+    public abstract Promise<ProcessResult> newInstance(String instanceName, String instanceParam) throws Exception;
 
     public abstract boolean isCallbackComplete();
 
