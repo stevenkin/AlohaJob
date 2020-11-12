@@ -51,7 +51,11 @@ public class AlohaJobNode extends Lifecycle implements InitializingBean, Disposa
     public synchronized void trigger(Long appId, Long jobId, String triggerId) {
         if (!isStarted())
             return;
-        taskExecutor.execute(appId, jobId, triggerId);
+        try {
+            taskExecutor.execute(appId, jobId, triggerId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public synchronized NodeStatus getStatus() {

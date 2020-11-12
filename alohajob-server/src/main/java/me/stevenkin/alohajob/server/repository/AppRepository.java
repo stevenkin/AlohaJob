@@ -10,10 +10,6 @@ public class AppRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public AppRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     public AppDo findAppByUsernameAndAppName(String username, String appName) {
         return null;
     }
