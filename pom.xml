@@ -18,7 +18,6 @@
         <module>alohajob-scheduler/alohajob-scheduler-api</module>
         <module>alohajob-scheduler/alohajob-scheduler-default</module>
         <module>alohajob-example/alohajob-example-server</module>
-        <module>alohajob-rpc</module>
     </modules>
     <packaging>pom</packaging>
     <name>AlohaJob</name>
